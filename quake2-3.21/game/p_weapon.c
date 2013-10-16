@@ -134,11 +134,14 @@ qboolean Pickup_Weapon (edict_t *ent, edict_t *other)
 	if (!(ent->spawnflags & DROPPED_ITEM) )
 	{
 		// give them some ammo with it
-		ammo = FindItem (ent->item->ammo);
-		if ( (int)dmflags->value & DF_INFINITE_AMMO )
-			Add_Ammo (other, ammo, 1000);
-		else
-			Add_Ammo (other, ammo, ammo->quantity);
+		if(ent->item->ammo != NULL){			//stops the game from crashing when picking up weapons that dont have ammo
+
+			ammo = FindItem (ent->item->ammo);
+			if ( (int)dmflags->value & DF_INFINITE_AMMO )
+				Add_Ammo (other, ammo, 1000);
+			else
+				Add_Ammo (other, ammo, ammo->quantity);
+		}
 
 		if (! (ent->spawnflags & DROPPED_PLAYER_ITEM) )
 		{
@@ -245,13 +248,13 @@ void NoAmmoWeaponChange (edict_t *ent)
 		ent->client->newweapon = FindItem ("hyperblaster");
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("bullets"))]
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Batteries"))]
 		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("chaingun"))] )
 	{
 		ent->client->newweapon = FindItem ("chaingun");
 		return;
 	}
-	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("bullets"))]
+	if ( ent->client->pers.inventory[ITEM_INDEX(FindItem("Batteries"))]
 		&&  ent->client->pers.inventory[ITEM_INDEX(FindItem("machinegun"))] )
 	{
 		ent->client->newweapon = FindItem ("machinegun");
@@ -553,6 +556,8 @@ void weapon_grenade_fire (edict_t *ent, qboolean held)
 	int		speed;
 	float	radius;
 
+	
+
 	radius = damage+40;
 	if (is_quad)
 		damage *= 4;
@@ -565,8 +570,8 @@ void weapon_grenade_fire (edict_t *ent, qboolean held)
 	speed = GRENADE_MINSPEED + (GRENADE_TIMER - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / GRENADE_TIMER);
 	fire_grenade2 (ent, start, forward, damage, speed, timer, radius, held);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index]--;
+	//if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+	ent->client->pers.inventory[ent->client->ammo_index] = 0;
 
 	ent->client->grenade_time = level.time + 1.0;
 
@@ -648,24 +653,26 @@ void Weapon_Grenade (edict_t *ent)
 
 		if (ent->client->ps.gunframe == 11)
 		{
+			
 			if (!ent->client->grenade_time)
 			{
+
 				ent->client->grenade_time = level.time + GRENADE_TIMER + 0.2;
 				ent->client->weapon_sound = gi.soundindex("weapons/hgrenc1b.wav");
 			}
 
-			// they waited too long, detonate it in their hand
+			/* they waited too long, detonate it in their hand
 			if (!ent->client->grenade_blew_up && level.time >= ent->client->grenade_time)
 			{
 				ent->client->weapon_sound = 0;
 				weapon_grenade_fire (ent, true);
 				ent->client->grenade_blew_up = true;
-			}
+			}*/
 
 			if (ent->client->buttons & BUTTON_ATTACK)
 				return;
 
-			if (ent->client->grenade_blew_up)
+			/*if (ent->client->grenade_blew_up)
 			{
 				if (level.time >= ent->client->grenade_time)
 				{
@@ -676,8 +683,10 @@ void Weapon_Grenade (edict_t *ent)
 				{
 					return;
 				}
-			}
+			}*/
 		}
+
+		
 
 		if (ent->client->ps.gunframe == 12)
 		{
@@ -736,8 +745,8 @@ void weapon_grenadelauncher_fire (edict_t *ent)
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index]--;
+	//if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+	ent->client->pers.inventory[ent->client->ammo_index] = 0;
 }
 
 void Weapon_GrenadeLauncher (edict_t *ent)
@@ -763,15 +772,30 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 	int		damage;
 	float	damage_radius;
 	int		radius_damage;
+	int		speed;
+	int		quality;
+	int		good_enough;
+	
 
-	damage = 100 + (int)(random() * 20.0);
-	radius_damage = 120;
-	damage_radius = 120;
-	if (is_quad)
-	{
-		damage *= 4;
-		radius_damage *= 4;
-	}
+	quality = ent->client->quality;
+	//gi.bprintf(3,(char)(quality));
+	
+
+
+	if(quality > 100)
+		quality = (200-quality);//if they overcooked the food make it suck.
+
+	speed = 1.5*quality;
+	damage = quality + (int)(random() * quality);
+	radius_damage = quality *2;
+	damage_radius = quality *2;
+	
+	
+	
+	if(quality > 50)
+		good_enough = 1;
+	else
+		good_enough = 0;
 
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
 
@@ -780,7 +804,10 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_rocket (ent, start, forward, damage, 650, damage_radius, radius_damage);
+	
+
+	if(good_enough)
+		fire_rocket (ent, start, forward, damage, speed, damage_radius, radius_damage);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -792,8 +819,9 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index]--;
+	if(good_enough)
+		if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+			ent->client->pers.inventory[ent->client->ammo_index]--;
 }
 
 void Weapon_RocketLauncher (edict_t *ent)
@@ -847,12 +875,14 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 void Weapon_Blaster_Fire (edict_t *ent)
 {
 	int		damage;
+	
+	
 
 	if (deathmatch->value)
 		damage = 15;
 	else
 		damage = 10;
-	Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
+	//Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
 	ent->client->ps.gunframe++;
 }
 
@@ -1159,8 +1189,8 @@ void Chaingun_Fire (edict_t *ent)
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index] -= shots;
+	//if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+		//ent->client->pers.inventory[ent->client->ammo_index] -= shots;
 }
 
 
@@ -1208,12 +1238,14 @@ void weapon_shotgun_fire (edict_t *ent)
 		damage *= 4;
 		kick *= 4;
 	}
+	
+	Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
 
-	if (deathmatch->value)
+/*	if (deathmatch->value)
 		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_DEATHMATCH_SHOTGUN_COUNT, MOD_SHOTGUN);
 	else
 		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
-
+*/
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
 	gi.WriteShort (ent-g_edicts);
@@ -1230,7 +1262,7 @@ void weapon_shotgun_fire (edict_t *ent)
 void Weapon_Shotgun (edict_t *ent)
 {
 	static int	pause_frames[]	= {22, 28, 34, 0};
-	static int	fire_frames[]	= {8, 9, 0};
+	static int	fire_frames[]	= {8, 12, 16, 0};
 
 	Weapon_Generic (ent, 7, 18, 36, 39, pause_frames, fire_frames, weapon_shotgun_fire);
 }

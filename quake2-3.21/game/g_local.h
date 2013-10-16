@@ -862,6 +862,10 @@ typedef struct
 	int			game_helpchanged;
 	int			helpchanged;
 
+	int			quality;			//variable setup
+	int			whiskUses;
+	int			beaterUses;
+
 	qboolean	spectator;			// client is a spectator
 } client_persistant_t;
 
@@ -903,6 +907,10 @@ struct gclient_s
 	qboolean	weapon_thunk;
 
 	gitem_t		*newweapon;
+
+	int			quality;
+	int			whiskUses;
+	int			beaterUses;
 
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
@@ -1062,6 +1070,7 @@ struct edict_s
 
 	char		*map;			// target_changelevel
 
+
 	int			viewheight;		// height above origin where eyesight is determined
 	int			takedamage;
 	int			dmg;
@@ -1110,5 +1119,8 @@ struct edict_s
 	// common data blocks
 	moveinfo_t		moveinfo;
 	monsterinfo_t	monsterinfo;
+	vec3_t			dummypoint;
+    int				dummypointset;
+	int				dummytype;
 };
 

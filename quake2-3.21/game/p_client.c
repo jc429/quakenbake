@@ -626,6 +626,10 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.max_cells		= 200;
 	client->pers.max_slugs		= 50;
 
+	client->pers.quality		= 0;	//setup variables
+	client->pers.whiskUses		= 0;
+	client->pers.beaterUses		= 0;
+
 	client->pers.connected = true;
 }
 

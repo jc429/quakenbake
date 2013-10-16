@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "m_player.h"
 
+void Mark_Dummy_Spawn_Point(edict_t *ent, int type);
+void Spawn_Dummy(edict_t *ent);
 
 char *ClientTeam (edict_t *ent)
 {
@@ -986,7 +988,11 @@ void ClientCommand (edict_t *ent)
 	else if (Q_stricmp (cmd, "wave") == 0)
 		Cmd_Wave_f (ent);
 	else if (Q_stricmp(cmd, "playerlist") == 0)
-		Cmd_PlayerList_f(ent);
-	else	// anything that doesn't match a command will be a chat
-		Cmd_Say_f (ent, false, true);
+               Cmd_PlayerList_f(ent);
+    else if (Q_stricmp (cmd, "m") == 0)
+           Mark_Dummy_Spawn_Point(ent, 1);
+    else if (Q_stricmp (cmd, "d") == 0)
+           Spawn_Dummy(ent);
+    else    // anything that doesn't match a command will be a chat
+           Cmd_Say_f (ent, false, true);
 }

@@ -220,6 +220,11 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 	{
 		if (tr.fraction < 1.0)
 		{
+			if (Q_stricmp (tr.ent->classname, "bowl") == 0){
+				self->client->quality++;		//add some quality to the cook
+				self->client->beaterUses++;		//increment beater uses
+				gi.bprintf(3, "yo ");
+			}
 			if (tr.ent->takedamage)
 			{
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
@@ -237,6 +242,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 					if (self->client)
 						PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
 				}
+				
 			}
 		}
 	}
@@ -306,6 +312,13 @@ Fires a single blaster bolt.  Used by the blaster and hyper blaster.
 void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
+	
+	
+	if (Q_stricmp (other->classname, "bowl") == 0){
+		self->owner->client->whiskUses++; //increment uses of the whisk for each shot that hits;
+		self->owner->client->quality++; // quality assurance
+		gi.bprintf(3, " hey man ");
+	}
 
 	if (other == self->owner)
 		return;
@@ -399,6 +412,7 @@ static void Grenade_Explode (edict_t *ent)
 {
 	vec3_t		origin;
 	int			mod;
+	
 
 	if (ent->owner->client)
 		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
@@ -419,7 +433,7 @@ static void Grenade_Explode (edict_t *ent)
 			mod = MOD_HANDGRENADE;
 		else
 			mod = MOD_GRENADE;
-		T_Damage (ent->enemy, ent, ent->owner, dir, ent->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+		//T_Damage (ent->enemy, ent, ent->owner, dir, ent->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 	}
 
 	if (ent->spawnflags & 2)
@@ -428,7 +442,7 @@ static void Grenade_Explode (edict_t *ent)
 		mod = MOD_HG_SPLASH;
 	else
 		mod = MOD_G_SPLASH;
-	T_RadiusDamage(ent, ent->owner, ent->dmg, ent->enemy, ent->dmg_radius, mod);
+	//T_RadiusDamage(ent, ent->owner, ent->dmg, ent->enemy, ent->dmg_radius, mod);
 
 	VectorMA (ent->s.origin, -0.02, ent->velocity, origin);
 	gi.WriteByte (svc_temp_entity);
@@ -465,7 +479,16 @@ static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurfa
 
 	if (!other->takedamage)
 	{
-		if (ent->spawnflags & 1)
+		if(Q_stricmp(ent->classname,"hgrenade")==0)
+			Mark_Dummy_Spawn_Point(ent, 1);
+		else if(Q_stricmp(ent->classname,"grenade")==0)
+			Mark_Dummy_Spawn_Point(ent, 2);
+		Spawn_Dummy(ent);
+
+		ent->enemy = other;
+		Grenade_Explode (ent);
+
+		/*if (ent->spawnflags & 1)
 		{
 			if (random() > 0.5)
 				gi.sound (ent, CHAN_VOICE, gi.soundindex ("weapons/hgrenb1a.wav"), 1, ATTN_NORM, 0);
@@ -476,11 +499,11 @@ static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurfa
 		{
 			gi.sound (ent, CHAN_VOICE, gi.soundindex ("weapons/grenlb1b.wav"), 1, ATTN_NORM, 0);
 		}
-		return;
+		return;*/
 	}
-
+/*
 	ent->enemy = other;
-	Grenade_Explode (ent);
+	Grenade_Explode (ent);*/
 }
 
 void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius)
@@ -620,6 +643,8 @@ void rocket_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *su
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage)
 {
 	edict_t	*rocket;
+
+	
 
 	rocket = G_Spawn();
 	VectorCopy (start, rocket->s.origin);

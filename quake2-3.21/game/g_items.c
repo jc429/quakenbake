@@ -232,7 +232,7 @@ qboolean Pickup_Bandolier (edict_t *ent, edict_t *other)
 	if (other->client->pers.max_slugs < 75)
 		other->client->pers.max_slugs = 75;
 
-	item = FindItem("Bullets");
+	item = FindItem("Batteries");
 	if (item)
 	{
 		index = ITEM_INDEX(item);
@@ -274,7 +274,7 @@ qboolean Pickup_Pack (edict_t *ent, edict_t *other)
 	if (other->client->pers.max_slugs < 100)
 		other->client->pers.max_slugs = 100;
 
-	item = FindItem("Bullets");
+	item = FindItem("Batteries");
 	if (item)
 	{
 		index = ITEM_INDEX(item);
@@ -1321,10 +1321,10 @@ always owned, never in the world
 		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
 		"models/weapons/v_shotg/tris.md2",
 /* icon */		"w_shotgun",
-/* pickup */	"Shotgun",
+/* pickup */	"Whisk",
 		0,
 		1,
-		"Shells",
+		NULL,
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_SHOTGUN,
 		NULL,
@@ -1370,7 +1370,7 @@ always owned, never in the world
 /* pickup */	"Machinegun",
 		0,
 		1,
-		"Bullets",
+		"Batteries",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_MACHINEGUN,
 		NULL,
@@ -1390,10 +1390,10 @@ always owned, never in the world
 		"models/weapons/g_chain/tris.md2", EF_ROTATE,
 		"models/weapons/v_chain/tris.md2",
 /* icon */		"w_chaingun",
-/* pickup */	"Chaingun",
+/* pickup */	"Egg Beater",
 		0,
 		1,
-		"Bullets",
+		"Batteries",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_CHAINGUN,
 		NULL,
@@ -1433,7 +1433,7 @@ always owned, never in the world
 		Drop_Weapon,
 		Weapon_GrenadeLauncher,
 		"misc/w_pkup.wav",
-		"models/weapons/g_launch/tris.md2", EF_ROTATE,
+		"models/weapons/g_launch/tris.md2", 0,
 		"models/weapons/v_launch/tris.md2",
 /* icon */		"w_glauncher",
 /* pickup */	"Grenade Launcher",
@@ -1459,10 +1459,10 @@ always owned, never in the world
 		"models/weapons/g_rocket/tris.md2", EF_ROTATE,
 		"models/weapons/v_rocket/tris.md2",
 /* icon */		"w_rlauncher",
-/* pickup */	"Rocket Launcher",
+/* pickup */	"Cake Launcher",
 		0,
 		1,
-		"Rockets",
+		"Cakes",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_ROCKETLAUNCHER,
 		NULL,
@@ -1547,7 +1547,7 @@ always owned, never in the world
 */
 	{
 		"ammo_shells",
-		Pickup_Ammo,
+		NULL,
 		NULL,
 		Drop_Ammo,
 		NULL,
@@ -1578,9 +1578,9 @@ always owned, never in the world
 		"models/items/ammo/bullets/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_bullets",
-/* pickup */	"Bullets",
+/* pickup */	"Batteries",
 /* width */		3,
-		50,
+		1,
 		NULL,
 		IT_AMMO,
 		0,
@@ -1624,7 +1624,7 @@ always owned, never in the world
 		"models/items/ammo/rockets/medium/tris.md2", 0,
 		NULL,
 /* icon */		"a_rockets",
-/* pickup */	"Rockets",
+/* pickup */	"Cakes",
 /* width */		3,
 		5,
 		NULL,
