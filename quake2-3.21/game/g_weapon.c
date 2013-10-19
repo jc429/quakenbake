@@ -220,10 +220,20 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 	{
 		if (tr.fraction < 1.0)
 		{
-			if (Q_stricmp (tr.ent->classname, "bowl") == 0){
+			if (Q_stricmp (tr.ent->classname, "oven") == 0){
 				self->client->quality++;		//add some quality to the cook
-				self->client->beaterUses++;		//increment beater uses
-				gi.bprintf(3, "yo ");
+				self->client->cookLevel++;		//increment amount cooked
+				if(self->client->cookLevel==64)
+					gi.bprintf(3, "Just a little more! \n");
+				if(self->client->cookLevel==76)
+					gi.bprintf(3, "Almost there! \n");
+				if(self->client->cookLevel==88)
+					gi.bprintf(3, "Perfect!!!! \n");
+				if(self->client->cookLevel==100)
+					gi.bprintf(3, "Too much! \n");
+				if(self->client->cookLevel==112)
+					gi.bprintf(3, "Don't worry, Mama will fix this!");
+
 			}
 			if (tr.ent->takedamage)
 			{
@@ -282,7 +292,7 @@ pistols, rifles, etc....
 */
 void fire_bullet (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int mod)
 {
-	fire_lead (self, start, aimdir, damage, kick, TE_GUNSHOT, hspread, vspread, mod);
+	fire_lead (self, start, aimdir, 0, kick, TE_GUNSHOT, hspread, vspread, mod);
 }
 
 
@@ -312,12 +322,25 @@ Fires a single blaster bolt.  Used by the blaster and hyper blaster.
 void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
-	
-	
 	if (Q_stricmp (other->classname, "bowl") == 0){
 		self->owner->client->whiskUses++; //increment uses of the whisk for each shot that hits;
 		self->owner->client->quality++; // quality assurance
-		gi.bprintf(3, " hey man ");
+		if(self->owner->client->whiskUses==6)
+			gi.bprintf(3, "Keep going! \n");
+		if(self->owner->client->whiskUses==9)
+			gi.bprintf(3, "Almost there! \n");
+		if(self->owner->client->whiskUses==12)
+			gi.bprintf(3, "Better than mama! \n");		
+		if(self->owner->client->whiskUses==15)
+			gi.bprintf(3, "Calm down!!! \n");
+		if(self->owner->client->whiskUses==18)
+			gi.bprintf(3, "Too much!!! \n");
+		if(self->owner->client->whiskUses > 18)
+			self->owner->client->quality = 150;	//instantly kill the food 
+
+
+
+
 	}
 
 	if (other == self->owner)
@@ -385,7 +408,7 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->touch = blaster_touch;
 	bolt->nextthink = level.time + 2;
 	bolt->think = G_FreeEdict;
-	bolt->dmg = damage;
+	bolt->dmg = 0;
 	bolt->classname = "bolt";
 	if (hyper)
 		bolt->spawnflags = 1;
@@ -657,7 +680,7 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->s.effects |= EF_ROCKET;
 	VectorClear (rocket->mins);
 	VectorClear (rocket->maxs);
-	rocket->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2");
+	rocket->s.modelindex = gi.modelindex ("models/objects/dmspot/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
 	rocket->nextthink = level.time + 8000/speed;

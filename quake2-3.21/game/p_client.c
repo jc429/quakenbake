@@ -628,7 +628,7 @@ void InitClientPersistant (gclient_t *client)
 
 	client->pers.quality		= 0;	//setup variables
 	client->pers.whiskUses		= 0;
-	client->pers.beaterUses		= 0;
+	client->pers.cookLevel		= 0;
 
 	client->pers.connected = true;
 }

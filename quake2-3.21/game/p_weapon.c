@@ -792,10 +792,12 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 	
 	
 	
-	if(quality > 50)
+	if(quality > 30)
 		good_enough = 1;
 	else
 		good_enough = 0;
+
+
 
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
 

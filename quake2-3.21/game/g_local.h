@@ -864,7 +864,7 @@ typedef struct
 
 	int			quality;			//variable setup
 	int			whiskUses;
-	int			beaterUses;
+	int			cookLevel;
 
 	qboolean	spectator;			// client is a spectator
 } client_persistant_t;
@@ -910,7 +910,7 @@ struct gclient_s
 
 	int			quality;
 	int			whiskUses;
-	int			beaterUses;
+	int			cookLevel;
 
 	// sum up damage over an entire frame, so
 	// shotgun blasts give a single big kick
