@@ -216,6 +216,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 	}
 
 	// send gun puff / flash
+	// looks good
 	if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
 	{
 		if (tr.fraction < 1.0)
