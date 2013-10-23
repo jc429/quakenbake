@@ -134,8 +134,7 @@ qboolean Pickup_Weapon (edict_t *ent, edict_t *other)
 	if (!(ent->spawnflags & DROPPED_ITEM) )
 	{
 		// give them some ammo with it
-		if(ent->item->ammo != NULL){			//stops the game from crashing when picking up weapons that dont have ammo
-
+		if((ent->item->ammo != NULL)&&(strcmp(ent->item->ammo,"ammo_rockets") == 0)){			//stops the game from crashing when picking up weapons that dont have ammo
 			ammo = FindItem (ent->item->ammo);
 			if ( (int)dmflags->value & DF_INFINITE_AMMO )
 				Add_Ammo (other, ammo, 1000);

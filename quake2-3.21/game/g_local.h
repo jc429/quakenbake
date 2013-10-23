@@ -826,7 +826,7 @@ void GetChaseTarget(edict_t *ent);
 #define	ANIM_DEATH		5
 #define	ANIM_REVERSE	6
 
-// ev8 you might wanna move your state variables to the respawn struct as it keeps data between spawns the presistant  struct keeps data between levels
+
 // client data that stays across multiple level loads
 typedef struct
 {
